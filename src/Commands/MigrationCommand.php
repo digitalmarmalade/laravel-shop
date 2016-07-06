@@ -127,8 +127,8 @@ class MigrationCommand extends Command
     {
         $migrationFile = base_path('/database/migrations') . '/' . date('Y_m_d_His') . '_shop_setup_tables.php';
 
-        $usersTable  = Config::get('auth.table');
-        $userModel   = Config::get('auth.model');
+        $usersTable  = config('shop.user_table');
+        $userModel   = config('shop.user');
         $userKeyName = (new $userModel())->getKeyName();
 
         $data = array_merge($data, compact('usersTable', 'userKeyName'));
