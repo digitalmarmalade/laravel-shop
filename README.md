@@ -1,4 +1,6 @@
-ITwrx fork of LARAVEL SHOP (minor changes for Laravel 5.2 Compatibility)
+Digital Marmalade fork of LARAVEL SHOP for Laravel 5.2
+
+Forked from ITwrx/laravel-shop for minor changes for Laravel 5.2 Compatibility.
 --------------------------------
 
 [![Latest Stable Version](https://poser.pugx.org/amsgames/laravel-shop/v/stable)](https://packagist.org/packages/amsgames/laravel-shop)
