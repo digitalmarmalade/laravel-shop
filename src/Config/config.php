@@ -40,6 +40,16 @@ return [
     |
     */
     'user_table' => 'users',
+    
+    /*
+    |--------------------------------------------------------------------------
+    | The Auth provider as defined in config/auth.php guards key
+    |--------------------------------------------------------------------------
+    |
+    | This is the User table used by LaravelShop to create correct relations.
+    |
+    */
+    'user_auth_provider' => 'web',
 
     /*
     |--------------------------------------------------------------------------
