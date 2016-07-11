@@ -127,7 +127,7 @@ class LaravelShop
             if (empty(static::$gatewayKey)) {
                 throw new ShopException('Payment gateway not selected.');
             }
-            if (empty($cart)) $cart = Auth::user()->cart;
+            if (empty($cart)) $cart = Auth::guard(config('shop.user_auth_provider'))->user()->cart;
             static::$gateway->onCheckout($cart);
         } catch (ShopException $e) {
             static::setException($e);
@@ -156,7 +156,9 @@ class LaravelShop
         try {
             if (empty(static::$gatewayKey))
                 throw new ShopException('Payment gateway not selected.');
-            if (empty($cart)) $cart = Auth::user()->cart;
+            if (empty($cart)) {
+                $cart = Auth::guard(config('shop.user_auth_provider'))->user()->cart;
+            }
             $order = $cart->placeOrder();
             $statusCode = $order->statusCode;
             \event(new OrderPlaced($order->id));
