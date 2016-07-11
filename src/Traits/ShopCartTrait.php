@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Amsgames\LaravelShop\Models\ShopCartModel;
 use InvalidArgumentException;
 
 trait ShopCartTrait
@@ -59,7 +60,7 @@ trait ShopCartTrait
     
     public function sessionUser()
     {
-        return $this->where('session_id', Session::getId());
+        return $this->where('session_id', Session::get('laravel-shop_cart_session_id'));
     }
 
     /**
@@ -89,11 +90,13 @@ trait ShopCartTrait
             if (is_object($item)) {
                 $reflection = new \ReflectionClass($item);
             }
-            $cartClass = config('shop.item');
-            $cartItem = new $cartClass;
+            $itemClass = config('shop.item');
+            $cartItem = new $itemClass;
+            
+            $cartClass = config('shop.cart');
             
             if (Auth::guard(config('shop.user_auth_provider'))->guest()) {
-                $cartItem->session_id = Session::getId();
+                $cartItem->session_id = $cartClass::getSessionId();
             } else {
                 $cartItem->user_id = $this->user->shopId;
             }
@@ -230,12 +233,28 @@ trait ShopCartTrait
     public function scopeWhereCurrent($query)
     {
         if (Auth::guard(config('shop.user_auth_provider'))->guest()) {
-            return $query->whereSession(Session::getId());
+            $cartClass = config('shop.cart');
+            return $query->whereSession($cartClass::getSessionId());
         } else {
             return $query->whereUser(Auth::guard(config('shop.user_auth_provider'))->user()->shopId);
         }
     }
 
+    public function scopeCurrentSession($query)
+    {
+        $cartClass = config('shop.cart');
+        $sessionCart = $query->whereSession($cartClass::getSessionId())->first();
+        if (empty($sessionCart)) {
+            $cartClass = config('shop.cart');
+            $cart = new $cartClass;
+            $cart->session_id = $cartClass::getSessionId();
+            $cart->save();
+            return $cart;
+        } else {
+            return $sessionCart;
+        }
+    }
+    
     /**
      * Scope to current user cart and returns class model.
      *
@@ -250,7 +269,7 @@ trait ShopCartTrait
             $cartClass = config('shop.cart');
             $cart = new $cartClass;
             if (Auth::guard(config('shop.user_auth_provider'))->guest()) {
-                $cart->session_id = Session::getId();
+                $cart->session_id = $cartClass::getSessionId();
             } else {
                 $cart->user_id = Auth::guard(config('shop.user_auth_provider'))->user()->shopId;
             }
@@ -334,6 +353,46 @@ trait ShopCartTrait
         return $item->where('sku', $sku)
             ->where('cart_id', $this->attributes['id'])
             ->first();
+    }
+    
+    /**
+     * Gets the session id that is used by the cart table to find the current session cart
+     * If the session id is not set it creates one
+     * @return type
+     */
+    public function getSessionId()
+    {
+        if (Session::get('laravel-shop_cart_session_id', false) === false) {
+            Session::put('laravel-shop_cart_session_id', str_random(64) . '_' . time());
+        }
+        return Session::get('laravel-shop_cart_session_id');
+    }
+    
+    /**
+     * Merges current cart with another cart
+     * @param ShopCartModel $cart
+     */
+    public function merge(ShopCartModel $cart)
+    {
+        $currentCartItems = $this->items()->get();
+        $currentCartSkus = [];
+        foreach ($currentCartItems as $index => $currentCartItem) {
+            $currentCartSkus[$index] = $currentCartItem->sku;
+        }
+        
+        $mergeCartItems = $cart->items()->get();
+        
+        foreach ($mergeCartItems as $mergeCartItem) {
+            $searchResult = array_search($mergeCartItem->sku, $currentCartSkus, true);
+            if ($searchResult !== false) { // the merged item is already in our basket
+                $currentCartItem[$searchResult]->quantity += $mergeCartItem->quantity;
+                $currentCartItem[$searchResult]->save();
+            } else {
+                $mergeCartItem->cart_id = $this->getAttribute('id');
+                $mergeCartItem->save();
+            }
+        }
+        $this->resetCalculations();
     }
 
 }
