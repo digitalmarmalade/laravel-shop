@@ -44,7 +44,7 @@ trait ShopOrderTrait
      */
     public function user()
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
+        return $this->belongsTo(config('shop.user'), 'user_id');
     }
 
     /**

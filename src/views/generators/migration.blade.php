@@ -15,7 +15,8 @@ class ShopSetupTables extends Migration
         // Create table for storing carts
         Schema::create('{{ $cartTable }}', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->string('session_id')->nullable();
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('{{ $userKeyName }}')
@@ -27,7 +28,8 @@ class ShopSetupTables extends Migration
         // Create table for storing items
         Schema::create('{{ $itemTable }}', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->string('session_id')->nullable();
             $table->bigInteger('cart_id')->unsigned()->nullable();
             $table->bigInteger('order_id')->unsigned()->nullable();
             $table->string('sku');
