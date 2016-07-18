@@ -17,6 +17,7 @@ class ShopSetupTables extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id')->unsigned()->nullable();
             $table->string('session_id')->nullable();
+            $table->decimal('shipping', 20, 2)->default(0)->notNull();
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('{{ $userKeyName }}')
@@ -88,6 +89,10 @@ class ShopSetupTables extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id')->unsigned();
             $table->string('statusCode', 32);
+            $table->decimal('price', 20, 2);
+            $table->decimal('shipping', 20, 2);
+            $table->decimal('tax', 20, 2);
+            $table->decimal('total_price', 20, 2);
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('{{ $userKeyName }}')

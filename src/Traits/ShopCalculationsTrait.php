@@ -34,7 +34,7 @@ trait ShopCalculationsTrait
     public function getCountAttribute()
     {
         if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->itemCount, 2);
+        return round($this->shopCalculations->item_count, 2);
     }
 
     /**
@@ -45,7 +45,7 @@ trait ShopCalculationsTrait
     public function getTotalPriceAttribute()
     {
         if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->totalPrice, 2);
+        return round($this->shopCalculations->total_price, 2);
     }
 
     /**
@@ -56,7 +56,7 @@ trait ShopCalculationsTrait
     public function getTotalTaxAttribute()
     {
         if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->totalTax + ($this->totalPrice * Config::get('shop.tax')), 2);
+        return round($this->shopCalculations->total_tax + ($this->total_price * Config::get('shop.tax')), 2);
     }
 
     /**
@@ -67,7 +67,7 @@ trait ShopCalculationsTrait
     public function getTotalShippingAttribute()
     {
         if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->totalShipping, 2);
+        return round($this->shopCalculations->total_shipping, 2);
     }
 
     /**
@@ -85,7 +85,7 @@ trait ShopCalculationsTrait
     public function getTotalAttribute()
     {
         if (empty($this->shopCalculations)) $this->runCalculations();
-        return $this->totalPrice + $this->totalTax + $this->totalShipping;
+        return $this->total_price + $this->total_tax + $this->total_shipping;
     }
 
     /**
@@ -95,7 +95,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalPriceAttribute()
     {
-        return Shop::format($this->totalPrice);
+        return Shop::format($this->total_price);
     }
 
     /**
@@ -105,7 +105,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalTaxAttribute()
     {
-        return Shop::format($this->totalTax);
+        return Shop::format($this->total_tax);
     }
 
     /**
@@ -115,7 +115,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalShippingAttribute()
     {
-        return Shop::format($this->totalShipping);
+        return Shop::format($this->total_shipping);
     }
 
     /**
@@ -160,10 +160,10 @@ trait ShopCalculationsTrait
         }
         $this->shopCalculations = DB::table($this->table)
             ->select([
-                DB::raw('sum(' . Config::get('shop.item_table') . '.quantity) as itemCount'),
-                DB::raw('sum(' . Config::get('shop.item_table') . '.price * ' . Config::get('shop.item_table') . '.quantity) as totalPrice'),
-                DB::raw('sum(' . Config::get('shop.item_table') . '.tax * ' . Config::get('shop.item_table') . '.quantity) as totalTax'),
-                DB::raw('sum(' . Config::get('shop.item_table') . '.shipping * ' . Config::get('shop.item_table') . '.quantity) as totalShipping')
+                DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.quantity), 0) as item_count'),
+                DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.price * ' . Config::get('shop.item_table') . '.quantity), 0) as total_price'),
+                DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.tax * ' . Config::get('shop.item_table') . '.quantity), 0) as total_tax'),
+                DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.shipping * ' . Config::get('shop.item_table') . '.quantity), 0) as total_shipping')
             ])
             ->join(
                 Config::get('shop.item_table'),
@@ -173,6 +173,14 @@ trait ShopCalculationsTrait
             )
             ->where($this->table . '.id', $this->attributes['id'])
             ->first();
+        
+        //We have a fixed shipping amount
+        if (floatval($this->shipping) !== floatval(0)) {
+            $this->shopCalculations->total_shipping = $this->shipping;
+        }
+        
+        //dd($this->shopCalculations);
+        
         if (Config::get('shop.cache_calculations')) {
             Cache::put(
                 $cacheKey,

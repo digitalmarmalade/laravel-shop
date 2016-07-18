@@ -310,10 +310,17 @@ trait ShopCartTrait
     {
         if (empty($statusCode)) $statusCode = Config::get('shop.order_status_placement');
         // Create order
-        $order = call_user_func( Config::get('shop.order') . '::create', [
-            'user_id'       => $this->user_id,
-            'statusCode'    => $statusCode
-        ]);
+        $orderClass = config('shop.order');
+        $order = new $orderClass;
+        
+        $order->user_id = $this->user_id;
+        $order->statusCode = $statusCode;
+        $order->price = $this->totalPrice;
+        $order->shipping = $this->totalShipping;
+        $order->tax = $this->totalTax;
+        $order->total_price = $this->total;
+        $order->save();
+        
         // Map cart items into order
         for ($i = count($this->items) - 1; $i >= 0; --$i) {
             // Attach to order
@@ -325,6 +332,18 @@ trait ShopCartTrait
         }
         $this->resetCalculations();
         return $order;
+    }
+    
+    /**
+     * Set a fixed shipping amount on the cart which overrides individual item shipping amounts
+     * @param float $shipping
+     */
+    public function setShipping($shipping)
+    {
+        $this->shipping = $shipping;
+        $this->save();
+        $this->resetCalculations();
+        return $this;
     }
 
     /**
@@ -346,12 +365,12 @@ trait ShopCartTrait
      *
      * @return mixed
      */
-    private function getItem($sku)
+    private function getItem($sku, $cartId = null)
     {
         $className  = Config::get('shop.item');
         $item       = new $className();
         return $item->where('sku', $sku)
-            ->where('cart_id', $this->attributes['id'])
+            ->where('cart_id', ($cartId === null ? $this->attributes['id'] : $cartId))
             ->first();
     }
     
@@ -374,25 +393,10 @@ trait ShopCartTrait
      */
     public function merge(ShopCartModel $cart)
     {
-        $currentCartItems = $this->items()->get();
-        $currentCartSkus = [];
-        foreach ($currentCartItems as $index => $currentCartItem) {
-            $currentCartSkus[$index] = $currentCartItem->sku;
-        }
-        
         $mergeCartItems = $cart->items()->get();
-        
         foreach ($mergeCartItems as $mergeCartItem) {
-            $searchResult = array_search($mergeCartItem->sku, $currentCartSkus, true);
-            if ($searchResult !== false) { // the merged item is already in our basket
-                $currentCartItem[$searchResult]->quantity += $mergeCartItem->quantity;
-                $currentCartItem[$searchResult]->save();
-            } else {
-                $mergeCartItem->cart_id = $this->getAttribute('id');
-                $mergeCartItem->save();
-            }
+            $this->add($this->getItem($mergeCartItem->sku, $cart->id), $mergeCartItem->quantity);
         }
-        $this->resetCalculations();
     }
 
 }
