@@ -14,6 +14,7 @@ namespace Amsgames\LaravelShop\Traits;
 
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
+use Amsgames\LaravelShop\LaravelShop as Shop;
 
 trait ShopOrderTrait
 {
@@ -222,7 +223,7 @@ trait ShopOrderTrait
     {
         return $this->attributes['statusCode'] == 'pending';
     }
-
+    
     /**
      * Creates the order's transaction.
      *

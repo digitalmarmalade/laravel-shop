@@ -101,7 +101,7 @@ trait ShopItemTrait
     {
         return Shop::format($this->attributes['price']);
     }
-
+    
     /**
      * Scope class by a given sku.
      *
