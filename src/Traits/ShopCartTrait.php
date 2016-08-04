@@ -82,14 +82,19 @@ trait ShopCartTrait
     public function add($item, $quantity = 1, $quantityReset = false)
     {
         if (!is_array($item) && !$item->isShoppable) return;
+        
         // Get item
         $cartItem = $this->getItem(is_array($item) ? $item['sku'] : $item->sku);
+        
+        
         // Add new or sum quantity
         if (empty($cartItem)) {
+            
             $reflection = null;
             if (is_object($item)) {
                 $reflection = new \ReflectionClass($item);
             }
+            
             $itemClass = config('shop.item');
             $cartItem = new $itemClass;
             
@@ -100,6 +105,7 @@ trait ShopCartTrait
             } else {
                 $cartItem->user_id = $this->user->shopId;
             }
+            
             $cartItem->cart_id = $this->attributes['id'];
             $cartItem->sku = is_array($item) ? $item['sku'] : $item->sku;
             $cartItem->price = is_array($item) ? $item['price'] : $item->price;
@@ -131,8 +137,39 @@ trait ShopCartTrait
                 : $cartItem->quantity + $quantity;
         }
         $cartItem->save();
+        $this->processVouchers();
         $this->resetCalculations();
         return $this;
+    }
+    
+    public function addVoucher($item)
+    {
+        $currentVoucherItems = $this->getVoucherItems();
+        if (count($currentVoucherItems) > 0) {
+            foreach ($currentVoucherItems as $currentVoucherItem) {
+                $this->remove($currentVoucherItem);
+            }
+        }
+        if (strtotime($item->expiry) > time()) { //it's not expired
+            return $this->add($item, 1);
+        } else {
+            return $this;
+        }
+    }
+    
+    private function getVoucherItems()
+    {
+        $items = $this->items()->get();
+        $vouchers = [];
+        
+        foreach ($items as $item) {
+            $product = $item->object;
+            
+            if (in_array(ShopVoucherTrait::class, class_uses($product))) {
+                $vouchers[] = $item;
+            }
+        }
+        return $vouchers;
     }
 
     /**
@@ -157,6 +194,7 @@ trait ShopCartTrait
             }
             $cartItem->delete();
         }
+        $this->processVouchers();
         $this->resetCalculations();
         return $this;
     }
@@ -356,6 +394,23 @@ trait ShopCartTrait
             ->delete();
         $this->resetCalculations();
         return $this;
+    }
+    
+    private function processVouchers()
+    {
+        $voucherItems = $this->getVoucherItems();
+        
+        foreach ($voucherItems as $voucherItem) {
+            $voucher = $voucherItem->object;
+            
+            $newVoucherPrice = $voucher->getPrice($this);
+
+            if ($voucherItem->price !== $newVoucherPrice) {
+                $voucherItem->price = $newVoucherPrice;
+                $voucherItem->save();
+            }
+            
+        }
     }
 
     /**
