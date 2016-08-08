@@ -102,6 +102,16 @@ trait ShopItemTrait
         return Shop::format($this->attributes['price']);
     }
     
+    public function getPriceWithTaxAttribute()
+    {
+        return number_format(round(floatval($this->attributes['price']) + (floatval($this->attributes['price']) * config('shop.tax')), 2), 2);
+    }
+    
+    public function getDisplayPriceWithTaxAttribute()
+    {
+        return Shop::format($this->getPriceWithTaxAttribute());
+    }
+    
     /**
      * Scope class by a given sku.
      *
