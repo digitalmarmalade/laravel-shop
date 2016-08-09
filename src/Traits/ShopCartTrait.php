@@ -72,6 +72,20 @@ trait ShopCartTrait
     {
         return $this->hasMany(Config::get('shop.item'), 'cart_id');
     }
+    
+    /**
+     * Returns the total number of items in the basket
+     * @return int
+     */
+    public function totalItems()
+    {
+        $items = $this->items()->get();
+        $total = 0;
+        foreach ($items as $item) {
+            $total += $item->quantity;
+        }
+        return $total;
+    }
 
     /**
      * Adds item to cart.
