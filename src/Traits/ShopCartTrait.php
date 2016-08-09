@@ -171,7 +171,7 @@ trait ShopCartTrait
         }
     }
     
-    private function getVoucherItems()
+    public function getVoucherItems()
     {
         $items = $this->items()->get();
         $vouchers = [];
