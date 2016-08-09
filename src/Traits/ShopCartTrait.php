@@ -462,7 +462,7 @@ trait ShopCartTrait
     {
         $mergeCartItems = $cart->items()->get();
         foreach ($mergeCartItems as $mergeCartItem) {
-            $this->add($this->getItem($mergeCartItem->sku, $cart->id), $mergeCartItem->quantity);
+            $this->add($mergeCartItem->object, $mergeCartItem->quantity);
         }
     }
 
