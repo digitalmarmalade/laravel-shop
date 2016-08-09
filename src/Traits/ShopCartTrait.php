@@ -177,9 +177,7 @@ trait ShopCartTrait
         $vouchers = [];
         
         foreach ($items as $item) {
-            $product = $item->object;
-            
-            if (in_array(ShopVoucherTrait::class, class_uses($product))) {
+            if ($item->object->isVoucher) {
                 $vouchers[] = $item;
             }
         }
