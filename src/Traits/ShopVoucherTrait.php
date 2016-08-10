@@ -31,9 +31,14 @@ trait ShopVoucherTrait
         return Shop::format($this->getPriceAttribute());
     }
     
+    public function getIsVoucherAttribute()
+    {
+        return true;
+    }
+    
     public function getPrice($cart)
     {
-        $cartTotalPrice = $this->getCartTotalPriceExcludingVouchers($cart);
+        $cartTotalPrice = $cart->total_price + $cart->total_tax;
         if ($cartTotalPrice >= $this->attributes['minimum_price']) {
             
             if ($this->attributes['percentage_adjustment'] > 0) {
@@ -53,23 +58,4 @@ trait ShopVoucherTrait
         return 0;
     }
     
-    private function getCartTotalPriceExcludingVouchers($cart)
-    {
-        $items = $cart->items()->get();
-        $totalPrice = 0;
-        
-        foreach ($items as $item) {
-            $product = $item->object;
-            
-            //It's not voucher
-            if (!in_array(ShopVoucherTrait::class, class_uses($product))) {
-                $totalPrice += ($item->price * $item->quantity);
-            }
-        }
-        
-        return $totalPrice;
-    }
-    
-    
-
 }

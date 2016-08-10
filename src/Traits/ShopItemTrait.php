@@ -39,6 +39,11 @@ trait ShopItemTrait
     {
         return true;
     }
+    
+    public function getIsVoucherAttribute()
+    {
+        return false;
+    }
 
     /**
      * Returns attached object.
@@ -104,7 +109,7 @@ trait ShopItemTrait
     
     public function getPriceWithTaxAttribute()
     {
-        return number_format(round(floatval($this->attributes['price']) + (floatval($this->attributes['price']) * config('shop.tax')), 2), 2);
+        return round(floatval($this->attributes['price']) + (floatval($this->attributes['price']) * config('shop.tax')), 2);
     }
     
     public function getDisplayPriceWithTaxAttribute()
