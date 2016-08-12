@@ -102,6 +102,8 @@ return [
     |
     */
     'order_status_table' => 'order_status',
+    
+    'order_status' => 'App\OrderStatus',
 
     /*
     |--------------------------------------------------------------------------
