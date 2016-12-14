@@ -180,7 +180,9 @@ trait ShopCalculationsTrait
                 $this->shopCalculations->item_count += $item->quantity;
                 $this->shopCalculations->total_price += $item->price * $item->quantity;
                 $this->shopCalculations->total_shipping += $item->shipping;
-                $this->shopCalculations->total_tax += round(($item->price * $item->quantity) * config('shop.tax'), 2);
+                
+                $taxCalculation = ((round(floatval($item->price) + (floatval($item->price) * config('shop.tax')), 2)) * $item->quantity) - floatval($item->price * $item->quantity);
+                $this->shopCalculations->total_tax += $taxCalculation;
             }
         }
         

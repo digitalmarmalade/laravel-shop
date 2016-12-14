@@ -41,12 +41,12 @@ trait ShopVoucherTrait
         if ($this->meetsRequirements($cart)) {
             
             if ($this->attributes['percentage_adjustment'] > 0) {
-                return ($cart->total_price / 100) * $this->attributes['percentage_adjustment'] * -1;
+                return (($cart->total_price + $cart->total_tax) / 100) * $this->attributes['percentage_adjustment'] * -1;
             }
             
             if ($this->fixed_price_adjustment > 0) {
                 //if the fixed price adjustment is more than the total cart price, then return -totalCartPrice, else return -fixedPriceAdjustment
-                return ($cart->total_price > $this->attributes['fixed_price_adjustment'])
+                return ($cart->total_price + $cart->total_tax > $this->attributes['fixed_price_adjustment'])
                     ? $this->attributes['fixed_price_adjustment'] * -1
                     : $cart->total_price * -1;
             }
