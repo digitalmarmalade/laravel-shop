@@ -1,3 +1,4 @@
+You probably don't want to use this repo until this notice is gone.
 ITwrx fork of LARAVEL SHOP (minor changes for Laravel 5.2 Compatibility)
 --------------------------------
 
