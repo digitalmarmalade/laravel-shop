@@ -31,10 +31,10 @@
     "extra": {
     "laravel": {
         "providers": [
-            "ITwrx\\LaravelShop\\LaravelShopProvider"
+            "Amsgames\\LaravelShop\\LaravelShopProvider"
         ],
         "aliases": {
-            "Shop": "ITwrx\\LaravelShop\\LaravelShopFacade"
+            "Shop": "Amsgames\\LaravelShop\\LaravelShopFacade"
         }
     }
 }
