@@ -52,8 +52,6 @@ Laravel shop adds shopping cart, orders and payments to your new or existing pro
   - [Callbacks](#callbacks)
   - [Exceptions](#exception)
 - [License](#license)
-- [Additional Information](#additional-information)
-- [Change Log](#change-log)
 
 ## Scope
 
@@ -1176,5 +1174,5 @@ You can see these [PayPal gateways](https://github.com/ITwrx/laravel-shop-gatewa
 
 ## License
 
-Amsgames\laravel-shop is free software distributed under the terms of the MIT license. Any changes in this fork are Free Software released under the AGPL.
+Amsgames\laravel-shop is free software distributed under the terms of the MIT license. Any changes in this fork (ITwrx\laravel-shop) are Free Software released under the AGPL.
 
