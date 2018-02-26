@@ -1168,7 +1168,7 @@ For `onChange`, `onCallbackSuccess` and `onCallbackFail`:
 
 ### Examples
 
-You can see the [PayPal gateways](https://github.com/ITwrx/laravel-shop-gateway-paypal/tree/master/src) Amsgames made as examples.
+You can see these [PayPal gateways](https://github.com/ITwrx/laravel-shop-gateway-paypal/tree/master/src) as examples.
 
 - [GatewayPayPal](https://github.com/ITwrx/laravel-shop-gateway-paypal/blob/master/src/GatewayPayPal.php) - Processes credit cards, uses `onCheckout` and `onCharge`.
 
