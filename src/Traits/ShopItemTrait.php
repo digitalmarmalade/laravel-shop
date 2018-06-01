@@ -103,7 +103,7 @@ trait ShopItemTrait
 
     public function getPriceWithTaxAttribute()
     {
-        return number_format(round(floatval($this->attributes['price']) + (floatval($this->attributes['price']) * config('shop.tax')), 2), 2);
+        return round(floatval($this->attributes['price']) + (floatval($this->attributes['price']) * config('shop.tax')), 2);
     }
 
     public function getDisplayPriceWithTaxAttribute()
@@ -172,5 +172,10 @@ trait ShopItemTrait
                         ->whereSKU($this->attributes['sku'])
                         ->whereStatusIn(config('shop.order_status_purchase'))
                         ->count() > 0;
+    }
+
+    public function getIsVoucherAttribute()
+    {
+        return false;
     }
 }
