@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Amsgames\LaravelShop;
 
@@ -11,7 +11,6 @@ namespace Amsgames\LaravelShop;
  * @license MIT
  * @package Amsgames\LaravelShop
  */
-
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 
@@ -38,21 +37,21 @@ class MigrationCommand extends Command
      */
     public function fire()
     {
-        $this->laravel->view->addNamespace('laravel-shop', substr(__DIR__, 0, -8).'views');
+        $this->laravel->view->addNamespace('laravel-shop', substr(__DIR__, 0, -8) . 'views');
 
-        $cartTable          = Config::get('shop.cart_table');
-        $itemTable          = Config::get('shop.item_table');
-        $couponTable        = Config::get('shop.coupon_table');
-        $orderStatusTable   = Config::get('shop.order_status_table');
-        $orderTable         = Config::get('shop.order_table');
-        $transactionTable   = Config::get('shop.transaction_table');
+        $cartTable = Config::get('shop.cart_table');
+        $itemTable = Config::get('shop.item_table');
+        $couponTable = Config::get('shop.coupon_table');
+        $orderStatusTable = Config::get('shop.order_status_table');
+        $orderTable = Config::get('shop.order_table');
+        $transactionTable = Config::get('shop.transaction_table');
 
         // Migrations
         $this->line('');
-        $this->info( "Tables: $cartTable, $itemTable" );
+        $this->info("Tables: $cartTable, $itemTable");
 
-        $message = "A migration that creates '$cartTable', '$itemTable', '$orderTable'".
-        " tables will be created in database/migrations directory";
+        $message = "A migration that creates '$cartTable', '$itemTable', '$orderTable'" .
+                " tables will be created in database/migrations directory";
 
         $this->comment($message);
         $this->line('');
@@ -63,29 +62,23 @@ class MigrationCommand extends Command
 
             $this->info('Creating migration...');
             if ($this->createMigration(compact(
-                    'cartTable',
-                    'itemTable',
-                    'couponTable',
-                    'orderStatusTable',
-                    'orderTable',
-                    'transactionTable'
-                ))
+                                    'cartTable', 'itemTable', 'couponTable', 'orderStatusTable', 'orderTable', 'transactionTable'
+                    ))
             ) {
 
                 $this->info('Migration successfully created!');
             } else {
                 $this->error(
-                    "Couldn't create migration.\n Check the write permissions".
-                    " within the database/migrations directory."
+                        "Couldn't create migration.\n Check the write permissions" .
+                        " within the database/migrations directory."
                 );
             }
-
         }
 
         // Seeder
 
         $this->line('');
-        $this->info( "Table seeders: $orderStatusTable" );
+        $this->info("Table seeders: $orderStatusTable");
         $message = "A seeder that seeds '$orderStatusTable' table(s) with data. Will be created in database/seeds directory";
 
         $this->comment($message);
@@ -97,22 +90,16 @@ class MigrationCommand extends Command
 
             $this->info('Creating seeder...');
             if ($this->createSeeder(compact(
-                    'cartTable',
-                    'itemTable',
-                    'couponTable',
-                    'orderStatusTable',
-                    'orderTable',
-                    'transactionTable'
-                ))
+                                    'cartTable', 'itemTable', 'couponTable', 'orderStatusTable', 'orderTable', 'transactionTable'
+                    ))
             ) {
                 $this->info('Seeder successfully created!');
             } else {
                 $this->error(
-                    "Couldn't create seeder.\n Check the write permissions".
-                    " within the database/seeds directory."
+                        "Couldn't create seeder.\n Check the write permissions" .
+                        " within the database/seeds directory."
                 );
             }
-
         }
     }
 
@@ -127,8 +114,8 @@ class MigrationCommand extends Command
     {
         $migrationFile = base_path('/database/migrations') . '/' . date('Y_m_d_His') . '_shop_setup_tables.php';
 
-        $usersTable  = Config::get('auth.table');
-        $userModel   = Config::get('auth.model');
+        $usersTable = config('shop.user_table');
+        $userModel = config('shop.user');
         $userKeyName = (new $userModel())->getKeyName();
 
         $data = array_merge($data, compact('usersTable', 'userKeyName'));
