@@ -73,6 +73,20 @@ trait ShopCartTrait
     }
 
     /**
+     * Returns the total number of items in the basket
+     * @return int
+     */
+    public function totalItems()
+    {
+        $items = $this->items()->get();
+        $total = 0;
+        foreach ($items as $item) {
+            $total += $item->quantity;
+        }
+        return $total;
+    }
+
+    /**
      * Adds item to cart.
      *
      * @param mixed $item     Item to add, can be an Store Item, a Model with ShopItemTrait or an array.
