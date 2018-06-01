@@ -11,7 +11,6 @@ namespace Amsgames\LaravelShop\Traits;
  * @license MIT
  * @package Amsgames\LaravelShop
  */
-
 use Shop;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -33,8 +32,9 @@ trait ShopCalculationsTrait
      */
     public function getCountAttribute()
     {
-        if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->itemCount, 2);
+        if (empty($this->shopCalculations))
+            $this->runCalculations();
+        return round($this->shopCalculations->item_count, 2);
     }
 
     /**
@@ -44,8 +44,9 @@ trait ShopCalculationsTrait
      */
     public function getTotalPriceAttribute()
     {
-        if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->totalPrice, 2);
+        if (empty($this->shopCalculations))
+            $this->runCalculations();
+        return round($this->shopCalculations->total_price, 2);
     }
 
     /**
@@ -55,8 +56,9 @@ trait ShopCalculationsTrait
      */
     public function getTotalTaxAttribute()
     {
-        if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->totalTax + ($this->totalPrice * Config::get('shop.tax')), 2);
+        if (empty($this->shopCalculations))
+            $this->runCalculations();
+        return round($this->shopCalculations->total_tax + ($this->total_price * Config::get('shop.tax')), 2);
     }
 
     /**
@@ -66,8 +68,9 @@ trait ShopCalculationsTrait
      */
     public function getTotalShippingAttribute()
     {
-        if (empty($this->shopCalculations)) $this->runCalculations();
-        return round($this->shopCalculations->totalShipping, 2);
+        if (empty($this->shopCalculations))
+            $this->runCalculations();
+        return round($this->shopCalculations->total_shipping, 2);
     }
 
     /**
@@ -75,7 +78,9 @@ trait ShopCalculationsTrait
      *
      * @return float
      */
-    public function getTotalDiscountAttribute() { /* TODO */ }
+    public function getTotalDiscountAttribute()
+    { /* TODO */
+    }
 
     /**
      * Returns total amount to be charged base on total price, tax and discount.
@@ -84,8 +89,9 @@ trait ShopCalculationsTrait
      */
     public function getTotalAttribute()
     {
-        if (empty($this->shopCalculations)) $this->runCalculations();
-        return $this->totalPrice + $this->totalTax + $this->totalShipping;
+        if (empty($this->shopCalculations))
+            $this->runCalculations();
+        return $this->total_price + $this->total_tax + $this->total_shipping;
     }
 
     /**
@@ -95,7 +101,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalPriceAttribute()
     {
-        return Shop::format($this->totalPrice);
+        return Shop::format($this->total_price);
     }
 
     /**
@@ -105,7 +111,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalTaxAttribute()
     {
-        return Shop::format($this->totalTax);
+        return Shop::format($this->total_tax);
     }
 
     /**
@@ -115,7 +121,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalShippingAttribute()
     {
-        return Shop::format($this->totalShipping);
+        return Shop::format($this->total_shipping);
     }
 
     /**
@@ -123,7 +129,9 @@ trait ShopCalculationsTrait
      *
      * @return string
      */
-    public function getDisplayTotalDiscountAttribute() { /* TODO */ }
+    public function getDisplayTotalDiscountAttribute()
+    { /* TODO */
+    }
 
     /**
      * Returns formatted total amount to be charged base on total price, tax and discount.
@@ -150,34 +158,34 @@ trait ShopCalculationsTrait
      */
     private function runCalculations()
     {
-        if (!empty($this->shopCalculations)) return $this->shopCalculations;
+        if (!empty($this->shopCalculations))
+            return $this->shopCalculations;
         $cacheKey = $this->calculationsCacheKey;
-        if (Config::get('shop.cache_calculations')
-            && Cache::has($cacheKey)
+        if (Config::get('shop.cache_calculations') && Cache::has($cacheKey)
         ) {
             $this->shopCalculations = Cache::get($cacheKey);
             return $this->shopCalculations;
         }
         $this->shopCalculations = DB::table($this->table)
-            ->select([
-                DB::raw('sum(' . Config::get('shop.item_table') . '.quantity) as itemCount'),
-                DB::raw('sum(' . Config::get('shop.item_table') . '.price * ' . Config::get('shop.item_table') . '.quantity) as totalPrice'),
-                DB::raw('sum(' . Config::get('shop.item_table') . '.tax * ' . Config::get('shop.item_table') . '.quantity) as totalTax'),
-                DB::raw('sum(' . Config::get('shop.item_table') . '.shipping * ' . Config::get('shop.item_table') . '.quantity) as totalShipping')
-            ])
-            ->join(
-                Config::get('shop.item_table'),
-                Config::get('shop.item_table') . '.' . ($this->table == Config::get('shop.order_table') ? 'order_id' : $this->table . '_id'),
-                '=',
-                $this->table . '.id'
-            )
-            ->where($this->table . '.id', $this->attributes['id'])
-            ->first();
+                ->select([
+                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.quantity), 0) as item_count'),
+                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.price * ' . Config::get('shop.item_table') . '.quantity), 0) as total_price'),
+                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.tax * ' . Config::get('shop.item_table') . '.quantity), 0) as total_tax'),
+                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.shipping * ' . Config::get('shop.item_table') . '.quantity), 0) as total_shipping')
+                ])
+                ->join(
+                        Config::get('shop.item_table'), Config::get('shop.item_table') . '.' . ($this->table == Config::get('shop.order_table') ? 'order_id' : $this->table . '_id'), '=', $this->table . '.id'
+                )
+                ->where($this->table . '.id', $this->attributes['id'])
+                ->first();
+
+        //We have a fixed shipping amount
+        if (floatval($this->shipping) !== floatval(0)) {
+            $this->shopCalculations->total_shipping = $this->shipping;
+        }
         if (Config::get('shop.cache_calculations')) {
             Cache::put(
-                $cacheKey,
-                $this->shopCalculations,
-                Config::get('shop.cache_calculations_minutes')
+                    $cacheKey, $this->shopCalculations, Config::get('shop.cache_calculations_minutes')
             );
         }
         return $this->shopCalculations;
@@ -186,12 +194,11 @@ trait ShopCalculationsTrait
     /**
      * Resets cart calculations.
      */
-    private function resetCalculations ()
+    private function resetCalculations()
     {
         $this->shopCalculations = null;
         if (Config::get('shop.cache_calculations')) {
             Cache::forget($this->calculationsCacheKey);
         }
     }
-
 }

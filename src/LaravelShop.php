@@ -119,6 +119,9 @@ class LaravelShop
      */
     public static function checkout($cart = null)
     {
+        if (Auth::guard(config('shop.user_auth_provider'))->guest()) {
+            throw new CheckoutException('Cannot checkout when unauthenticated');
+        }
         $success = true;
         try {
             if (empty(static::$gatewayKey)) {
@@ -151,6 +154,9 @@ class LaravelShop
      */
     public static function placeOrder($cart = null)
     {
+        if (Auth::guard(config('shop.user_auth_provider'))->guest()) {
+            throw new ShopException('Cannot check out unauthenticated.');
+        }
         try {
             if (empty(static::$gatewayKey))
                 throw new ShopException('Payment gateway not selected.');
