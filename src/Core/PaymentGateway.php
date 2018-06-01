@@ -11,7 +11,6 @@ namespace Amsgames\LaravelShop\Core;
  * @license MIT
  * @package Amsgames\LaravelShop
  */
-
 use JsonSerializable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
@@ -75,11 +74,11 @@ abstract class PaymentGateway implements PaymentGatewayInterface, Arrayable, Jso
      */
     public function __construct($id = '')
     {
-        $this->id            = $id;
+        $this->id = $id;
         $this->transactionId = uniqid();
-        $this->token         = uniqid();
+        $this->token = uniqid();
     }
-    
+
     /**
      * Called on cart checkout.
      *
@@ -87,6 +86,7 @@ abstract class PaymentGateway implements PaymentGatewayInterface, Arrayable, Jso
      */
     public function onCheckout($cart)
     {
+
     }
 
     /**
@@ -100,6 +100,7 @@ abstract class PaymentGateway implements PaymentGatewayInterface, Arrayable, Jso
      */
     public function onCallbackSuccess($order, $data = null)
     {
+
     }
 
     /**
@@ -113,6 +114,7 @@ abstract class PaymentGateway implements PaymentGatewayInterface, Arrayable, Jso
      */
     public function onCallbackFail($order, $data = null)
     {
+
     }
 
     /**
@@ -123,15 +125,15 @@ abstract class PaymentGateway implements PaymentGatewayInterface, Arrayable, Jso
     public function setCallbacks($order)
     {
         $this->callbackSuccess = route(config('shop.callback_route'), [
-            'status'    => 'success',
-            'id'        => $order->id,
-            'token'     => $this->token,
+            'status' => 'success',
+            'order_id' => $order->id,
+            'shoptoken' => $this->token,
         ]);
 
-        $this->callbackFail    = route(config('shop.callback_route'), [
-            'status'    => 'fail',
-            'id'        => $order->id,
-            'token'     => $this->token,
+        $this->callbackFail = route(config('shop.callback_route'), [
+            'status' => 'fail',
+            'order_id' => $order->id,
+            'shoptoken' => $this->token,
         ]);
     }
 
@@ -216,6 +218,4 @@ abstract class PaymentGateway implements PaymentGatewayInterface, Arrayable, Jso
     {
         return $this->toJson();
     }
-
-
 }

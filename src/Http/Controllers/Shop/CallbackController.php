@@ -9,45 +9,42 @@ use Amsgames\LaravelShop\Http\Controllers\Controller;
 
 class CallbackController extends Controller
 {
+
     /**
      * Process payment callback.
      *
      * @param Request $request   Request.
-     * @param string  $status    Callback status.
-     * @param int     $id        Order ID.
-     * @param string  $shoptoken Transaction token for security.
      *
      * @return redirect
      */
-    protected function process(Request $request, $status, $id, $shoptoken)
+    protected function process(Request $request)
     {
         $validator = Validator::make(
-            [
-                'id'        => $id,
-                'status'    => $status,
-                'shoptoken' => $shoptoken,
-            ],
-            [
-                'id'        => 'required|exists:' . config('shop.order_table') . ',id',
-                'status'    => 'required|in:success,fail',
-                'shoptoken' => 'required|exists:' . config('shop.transaction_table') . ',token,order_id,' . $id,
-            ]
+                        [
+                    'order_id' => $request->get('order_id'),
+                    'status' => $request->get('status'),
+                    'shoptoken' => $request->get('shoptoken'),
+                        ], [
+                    'order_id' => 'required|exists:' . config('shop.order_table') . ',id',
+                    'status' => 'required|in:success,fail',
+                    'shoptoken' => 'required|exists:' . config('shop.transaction_table') . ',token,order_id,' . $request->get('order_id'),
+                        ]
         );
 
         if ($validator->fails()) {
             abort(404);
         }
 
-        $order = call_user_func(config('shop.order') . '::find', $id);
+        $order = call_user_func(config('shop.order') . '::find', $request->get('order_id'));
 
-        $transaction = $order->transactions()->where('token', $shoptoken)->first();
+        $transaction = $order->transactions()->where('token', $request->get('shoptoken'))->first();
 
-        Shop::callback($order, $transaction, $status, $request->all());
+        Shop::callback($order, $transaction, $request->get('status'), $request->all());
 
         $transaction->token = null;
 
         $transaction->save();
 
-        return redirect()->route(config('shop.callback_redirect_route'), ['order' => $order->id]);
+        return redirect()->route(config('shop.callback_redirect_route'), ['orderId' => $order->id]);
     }
 }
