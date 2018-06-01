@@ -1,6 +1,6 @@
-Digital Marmalade fork of LARAVEL SHOP for Laravel 5.2
+Digital Marmalade fork of LARAVEL SHOP for Laravel 5.3
 
-Forked from ITwrx/laravel-shop for minor changes for Laravel 5.2 Compatibility.
+Forked from ITwrx/laravel-shop for minor changes for Laravel 5.3 Compatibility.
 --------------------------------
 
 [![Latest Stable Version](https://poser.pugx.org/amsgames/laravel-shop/v/stable)](https://packagist.org/packages/amsgames/laravel-shop)
@@ -8,7 +8,7 @@ Forked from ITwrx/laravel-shop for minor changes for Laravel 5.2 Compatibility.
 [![Latest Unstable Version](https://poser.pugx.org/amsgames/laravel-shop/v/unstable)](https://packagist.org/packages/amsgames/laravel-shop)
 [![License](https://poser.pugx.org/amsgames/laravel-shop/license)](https://packagist.org/packages/amsgames/laravel-shop)
 
-Laravel Shop is flexible way to add shop functionality to **Laravel 5.2**. Aimed to be the e-commerce solution for artisans.
+Laravel Shop is flexible way to add shop functionality to **Laravel 5.3**. Aimed to be the e-commerce solution for artisans.
 
 Laravel shop adds shopping cart, orders and payments to your new or existing project; letting you transform any model into a shoppable item.
 
