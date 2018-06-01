@@ -120,7 +120,7 @@ trait ShopOrderTrait
      */
     public function scopeWhereStatus($query, $statusCode)
     {
-        return $query = $query->where('statusCode', $statusCode);
+        return $query->where('statusCode', $statusCode);
     }
 
     /**
@@ -133,7 +133,16 @@ trait ShopOrderTrait
      */
     public function scopeWhereStatusIn($query, array $statusCodes)
     {
-        return $query = $query->whereIn('statusCode', $statusCodes);
+        return $query->whereIn('statusCode', $statusCodes);
+    }
+
+    public function scopeWhereWasPurchased($query, $wasPurchased)
+    {
+        if ($wasPurchased) {
+            return $query->whereIn('statusCode', config('shop.order_status_purchase'));
+        } else {
+            return $query->whereNotIn('statusCode', config('shop.order_status_purchase'));
+        }
     }
 
     /**
@@ -224,6 +233,15 @@ trait ShopOrderTrait
     public function getIsPendingAttribute()
     {
         return $this->attributes['statusCode'] == 'pending';
+    }
+
+    /**
+     * Returns a flag indicating if the order has been purchased
+     * @return boolean
+     */
+    public function getWasPurchasedAttribute()
+    {
+        return in_array($this->attributes['statusCode'], config('shop.order_status_purchase'), true);
     }
 
     /**
