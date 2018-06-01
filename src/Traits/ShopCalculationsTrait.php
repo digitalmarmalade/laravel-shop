@@ -186,9 +186,11 @@ trait ShopCalculationsTrait
                 $this->shopCalculations->item_count += $item->quantity;
                 $this->shopCalculations->total_price += $item->price * $item->quantity;
                 $this->shopCalculations->total_shipping += $item->shipping;
+
+                $taxCalculation = ((round(floatval($item->price) + (floatval($item->price) * config('shop.tax')), 2)) * $item->quantity) - floatval($item->price * $item->quantity);
+                $this->shopCalculations->total_tax += $taxCalculation;
             }
         }
-        $this->shopCalculations->total_tax += round(($item->price * $item->quantity) * config('shop.tax'), 2);
 
         //We have a fixed shipping amount, override the per item
         if (floatval($this->shipping) !== floatval(0)) {
