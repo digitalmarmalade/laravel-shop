@@ -1,14 +1,10 @@
-Digital Marmalade fork of LARAVEL SHOP for Laravel 5.2
+Digital Marmalade fork of LARAVEL SHOP for Laravel 5.5
 
-Forked from ITwrx/laravel-shop for minor changes for Laravel 5.2 Compatibility.
+
+ITwrx fork of LARAVEL SHOP (minor changes for Laravel 5.5 Compatibility)
 --------------------------------
 
-[![Latest Stable Version](https://poser.pugx.org/amsgames/laravel-shop/v/stable)](https://packagist.org/packages/amsgames/laravel-shop)
-[![Total Downloads](https://poser.pugx.org/amsgames/laravel-shop/downloads)](https://packagist.org/packages/amsgames/laravel-shop)
-[![Latest Unstable Version](https://poser.pugx.org/amsgames/laravel-shop/v/unstable)](https://packagist.org/packages/amsgames/laravel-shop)
-[![License](https://poser.pugx.org/amsgames/laravel-shop/license)](https://packagist.org/packages/amsgames/laravel-shop)
-
-Laravel Shop is flexible way to add shop functionality to **Laravel 5.2**. Aimed to be the e-commerce solution for artisans.
+Laravel Shop is a flexible way to add shop functionality to **Laravel 5.5**. 
 
 Laravel shop adds shopping cart, orders and payments to your new or existing project; letting you transform any model into a shoppable item.
 
@@ -58,8 +54,6 @@ Laravel shop adds shopping cart, orders and payments to your new or existing pro
   - [Callbacks](#callbacks)
   - [Exceptions](#exception)
 - [License](#license)
-- [Additional Information](#additional-information)
-- [Change Log](#change-log)
 
 ## Scope
 
@@ -84,35 +78,28 @@ On the horizon:
 
 ## Installation
 
-With composer
 
-```bash
-composer require amsgames/laravel-shop
-```
 
-Or add
+add
 
 ```json
-"amsgames/laravel-shop": "0.2.*"
+"ITwrx/laravel-shop": "dev-master"
 ```
 
-to your composer.json. Then run `composer install` or `composer update`.
+to your composer.json's require block. and
 
-Then in your `config/app.php` add 
+```json
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ITwrx/laravel-shop.git"
+        }
+    ]
+ ```
+at the bottom of composer.json, before the last curly brace.
 
-```php
-Amsgames\LaravelShop\LaravelShopProvider::class,
-```
-    
-in the `providers` array.
+Then run `composer update`. Don't worry about `config/app.php` as this package is compat with Laravel 5.5's auto discover feature.
 
-Then add
-
-```php
-'Shop'      => Amsgames\LaravelShop\LaravelShopFacade::class,
-```
-    
-in the `aliases` array.
 
 ## Configuration
 
@@ -486,7 +473,7 @@ Installed payment gateways can be configured and added in the `gateways` array i
 
 Laravel Shop comes with PayPal support out of the box. You can use PayPal's `Direct Credit Card` or `PayPal Express` payments.
 
-To configure PayPal and know how to use the gateways, please visit the [PayPal Gateway Package](https://github.com/amsgames/laravel-shop-gateway-paypal) page. 
+To configure PayPal and know how to use the gateways, please visit the [PayPal Gateway Package](https://github.com/ITwrx/laravel-shop-gateway-paypal) (ITwrx fork) page. 
 
 #### Omnipay
 
@@ -572,7 +559,7 @@ Payments are handled gateways, this package comes with PayPal out of the box.
 
 You can use PayPal's `Direct Credit Card` or `PayPal Express` payments.
 
-To configure PayPal and know how to use its gateways, please visit the [PayPal Gateway Package](https://github.com/amsgames/laravel-shop-gateway-paypal) page. 
+To configure PayPal and know how to use its gateways, please visit the [PayPal Gateway Package](https://github.com/ITwrx/laravel-shop-gateway-paypal) (ITwrx fork) page. 
 
 #### Exceptions
 
@@ -1181,19 +1168,13 @@ For `onChange`, `onCallbackSuccess` and `onCallbackFail`:
 
 ### Examples
 
-You can see the [PayPal gateways](https://github.com/amsgames/laravel-shop-gateway-paypal/tree/master/src) we made as examples.
+You can see these [PayPal gateways](https://github.com/ITwrx/laravel-shop-gateway-paypal/tree/master/src) as examples.
 
-- [GatewayPayPal](https://github.com/amsgames/laravel-shop-gateway-paypal/blob/master/src/GatewayPayPal.php) - Processes credit cards, uses `onCheckout` and `onCharge`.
+- [GatewayPayPal](https://github.com/ITwrx/laravel-shop-gateway-paypal/blob/master/src/GatewayPayPal.php) - Processes credit cards, uses `onCheckout` and `onCharge`.
 
-- [GatewayPayPalExpress](https://github.com/amsgames/laravel-shop-gateway-paypal/blob/master/src/GatewayPayPalExpress.php) - Processes callbacks, uses `onCallbackSuccess` and `onCharge`.
+- [GatewayPayPalExpress](https://github.com/ITwrx/laravel-shop-gateway-paypal/blob/master/src/GatewayPayPalExpress.php) - Processes callbacks, uses `onCallbackSuccess` and `onCharge`.
 
 ## License
 
-Laravel Shop is free software distributed under the terms of the MIT license.
+Amsgames\laravel-shop is free software distributed under the terms of the MIT license. 
 
-## Additional Information
-
-This package's architecture and design was inpired by the **Zizaco/entrust** package, we'll like to thank their contributors for their awesome woek.
-
-## Change Log
-* [v0.2.8](https://github.com/amsgames/laravel-shop/releases/tag/v0.2.8)
