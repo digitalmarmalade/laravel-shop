@@ -15,8 +15,9 @@ use Shop;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use Illuminate\Support\Facades\Session;
+use Amsgames\LaravelShop\Models\ShopCartModel;
+use InvalidArgumentException;
 
 trait ShopCartTrait
 {
@@ -46,11 +47,6 @@ trait ShopCartTrait
         });
     }
 
-    public function sessionUser()
-    {
-        return $this->where('session_id', Session::getId());
-    }
-
     /**
      * One-to-One relations with the user model.
      *
@@ -59,6 +55,11 @@ trait ShopCartTrait
     public function user()
     {
         return $this->belongsTo(config('shop.user'), 'user_id');
+    }
+
+    public function sessionUser()
+    {
+        return $this->where('session_id', Session::get('laravel-shop_cart_session_id'));
     }
 
     /**
@@ -81,7 +82,6 @@ trait ShopCartTrait
     {
         if (!is_array($item) && !$item->isShoppable)
             return;
-
         // Get item
         $cartItem = $this->getItem(is_array($item) ? $item['sku'] : $item->sku);
         // Add new or sum quantity
@@ -90,7 +90,6 @@ trait ShopCartTrait
             if (is_object($item)) {
                 $reflection = new \ReflectionClass($item);
             }
-
             $itemClass = config('shop.item');
             $cartItem = new $itemClass;
 
@@ -101,7 +100,6 @@ trait ShopCartTrait
             } else {
                 $cartItem->user_id = $this->user->shopId;
             }
-
             $cartItem->cart_id = $this->attributes['id'];
             $cartItem->sku = is_array($item) ? $item['sku'] : $item->sku;
             $cartItem->price = is_array($item) ? $item['price'] : $item->price;
@@ -119,7 +117,6 @@ trait ShopCartTrait
             $cartItem->quantity = $quantityReset ? $quantity : $cartItem->quantity + $quantity;
         }
         $cartItem->save();
-        $this->processVouchers();
         $this->resetCalculations();
         return $this;
     }
@@ -230,6 +227,21 @@ trait ShopCartTrait
         }
     }
 
+    public function scopeCurrentSession($query)
+    {
+        $cartClass = config('shop.cart');
+        $sessionCart = $query->whereSession($cartClass::getSessionId())->first();
+        if (empty($sessionCart)) {
+            $cartClass = config('shop.cart');
+            $cart = new $cartClass;
+            $cart->session_id = $cartClass::getSessionId();
+            $cart->save();
+            return $cart;
+        } else {
+            return $sessionCart;
+        }
+    }
+
     /**
      * Scope to current user cart and returns class model.
      *
@@ -330,5 +342,45 @@ trait ShopCartTrait
         return $item->where('sku', $sku)
                         ->where('cart_id', $this->attributes['id'])
                         ->first();
+    }
+
+    /**
+     * Gets the session id that is used by the cart table to find the current session cart
+     * If the session id is not set it creates one
+     * @return type
+     */
+    public function getSessionId()
+    {
+        if (Session::get('laravel-shop_cart_session_id', false) === false) {
+            Session::put('laravel-shop_cart_session_id', str_random(64) . '_' . time());
+        }
+        return Session::get('laravel-shop_cart_session_id');
+    }
+
+    /**
+     * Merges current cart with another cart
+     * @param ShopCartModel $cart
+     */
+    public function merge(ShopCartModel $cart)
+    {
+        $currentCartItems = $this->items()->get();
+        $currentCartSkus = [];
+        foreach ($currentCartItems as $index => $currentCartItem) {
+            $currentCartSkus[$index] = $currentCartItem->sku;
+        }
+
+        $mergeCartItems = $cart->items()->get();
+
+        foreach ($mergeCartItems as $mergeCartItem) {
+            $searchResult = array_search($mergeCartItem->sku, $currentCartSkus, true);
+            if ($searchResult !== false) { // the merged item is already in our basket
+                $currentCartItem[$searchResult]->quantity += $mergeCartItem->quantity;
+                $currentCartItem[$searchResult]->save();
+            } else {
+                $mergeCartItem->cart_id = $this->getAttribute('id');
+                $mergeCartItem->save();
+            }
+        }
+        $this->resetCalculations();
     }
 }
