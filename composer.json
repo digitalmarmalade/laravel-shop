@@ -2,7 +2,7 @@
     "name": "ITwrx/laravel-shop",
     "description": "Package set to provide shop or e-commerce functionality (such as CART, ORDERS, TRANSACTIONS and ITEMS) to Laravel for customizable builds.",
     "license": "MIT",
-    "keywords": ["shop","laravel","cart","orders","transactions","paypal","e-commerce","shopping cart","ecommerce","shopping"],
+    "keywords": ["shop", "laravel", "cart", "orders", "transactions", "paypal", "e-commerce", "shopping cart", "ecommerce", "shopping"],
     "authors": [
         {
             "name": "Amsgames, LLC",
@@ -29,13 +29,19 @@
     },
     "minimum-stability": "dev",
     "extra": {
-    "laravel": {
-        "providers": [
-            "Amsgames\\LaravelShop\\LaravelShopProvider"
-        ],
-        "aliases": {
-            "Shop": "Amsgames\\LaravelShop\\LaravelShopFacade"
+        "laravel": {
+            "providers": [
+                "Amsgames\\LaravelShop\\LaravelShopProvider"
+            ],
+            "aliases": {
+                "Shop": "Amsgames\\LaravelShop\\LaravelShopFacade"
+            }
         }
-    }
-}
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ITwrx/laravel-shop-gateway-paypal.git"
+        }
+    ]
 }
