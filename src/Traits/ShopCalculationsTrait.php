@@ -101,7 +101,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalPriceAttribute()
     {
-        return Shop::format($this->total_price);
+        return Shop::format(number_format($this->total_price, 2));
     }
 
     /**
@@ -111,7 +111,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalTaxAttribute()
     {
-        return Shop::format($this->total_tax);
+        return Shop::format(number_format($this->total_tax, 2));
     }
 
     /**
@@ -121,7 +121,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalShippingAttribute()
     {
-        return Shop::format($this->total_shipping);
+        return Shop::format(number_format($this->total_shipping, 2));
     }
 
     /**
@@ -140,7 +140,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalAttribute()
     {
-        return Shop::format($this->total);
+        return Shop::format(number_format($this->total, 2));
     }
 
     /**
@@ -168,10 +168,10 @@ trait ShopCalculationsTrait
         }
         $this->shopCalculations = DB::table($this->table)
                 ->select([
-                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.quantity), 0) as item_count'),
-                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.price * ' . Config::get('shop.item_table') . '.quantity), 0) as total_price'),
-                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.tax * ' . Config::get('shop.item_table') . '.quantity), 0) as total_tax'),
-                    DB::raw('COALESCE(sum(' . Config::get('shop.item_table') . '.shipping * ' . Config::get('shop.item_table') . '.quantity), 0) as total_shipping')
+                    DB::raw('COALESCE(SUM(' . Config::get('shop.item_table') . '.quantity), 0.0) as item_count'),
+                    DB::raw('COALESCE(SUM(' . Config::get('shop.item_table') . '.price * ' . Config::get('shop.item_table') . '.quantity), 0.0) as total_price'),
+                    DB::raw('COALESCE(SUM(' . Config::get('shop.item_table') . '.tax * ' . Config::get('shop.item_table') . '.quantity), 0.0) as total_tax'),
+                    DB::raw('COALESCE(SUM(' . Config::get('shop.item_table') . '.shipping * ' . Config::get('shop.item_table') . '.quantity), 0.0) as total_shipping')
                 ])
                 ->join(
                         Config::get('shop.item_table'), Config::get('shop.item_table') . '.' . ($this->table == Config::get('shop.order_table') ? 'order_id' : $this->table . '_id'), '=', $this->table . '.id'
@@ -183,6 +183,7 @@ trait ShopCalculationsTrait
         if (floatval($this->shipping) !== floatval(0)) {
             $this->shopCalculations->total_shipping = $this->shipping;
         }
+
         if (Config::get('shop.cache_calculations')) {
             Cache::put(
                     $cacheKey, $this->shopCalculations, Config::get('shop.cache_calculations_minutes')

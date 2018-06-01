@@ -11,7 +11,6 @@ namespace Amsgames\LaravelShop\Traits;
  * @license MIT
  * @package Amsgames\LaravelShop
  */
-
 use Auth;
 use Shop;
 use Illuminate\Support\Facades\Config;
@@ -25,7 +24,7 @@ trait ShopItemTrait
      *
      * @return bool
      */
-    public function getHasObjectAttribute() 
+    public function getHasObjectAttribute()
     {
         return array_key_exists('class', $this->attributes) && !empty($this->attributes['class']);
     }
@@ -57,13 +56,10 @@ trait ShopItemTrait
      */
     public function getDisplayNameAttribute()
     {
-        if ($this->hasObject) return $this->object->displayName;
-        return isset($this->itemName)
-            ? $this->attributes[$this->itemName]
-            : (array_key_exists('name', $this->attributes)
-                ? $this->attributes['name']
-                : ''
-            );
+        if ($this->hasObject)
+            return $this->object->displayName;
+        return isset($this->itemName) ? $this->attributes[$this->itemName] : (array_key_exists('name', $this->attributes) ? $this->attributes['name'] : ''
+                );
     }
 
     /**
@@ -83,11 +79,14 @@ trait ShopItemTrait
      */
     public function getShopUrlAttribute()
     {
-        if ($this->hasObject) return $this->object->shopUrl;
-        if (!property_exists($this, 'itemRouteName') && !property_exists($this, 'itemRouteParams')) return '#';
+        if ($this->hasObject)
+            return $this->object->shopUrl;
+        if (!property_exists($this, 'itemRouteName') && !property_exists($this, 'itemRouteParams'))
+            return '#';
         $params = [];
         foreach (array_keys($this->attributes) as $attribute) {
-            if (in_array($attribute, $this->itemRouteParams)) $params[$attribute] = $this->attributes[$attribute];
+            if (in_array($attribute, $this->itemRouteParams))
+                $params[$attribute] = $this->attributes[$attribute];
         }
         return empty($this->itemRouteName) ? '#' : \route($this->itemRouteName, $params);
     }
@@ -156,12 +155,12 @@ trait ShopItemTrait
      */
     public function getWasPurchasedAttribute()
     {
-        if (Auth::guest()) return false;
+        if (Auth::guest())
+            return false;
         return Auth::user()
-            ->orders()
-            ->whereSKU($this->attributes['sku'])
-            ->whereStatusIn(config('shop.order_status_purchase'))
-            ->count() > 0;
+                        ->orders()
+                        ->whereSKU($this->attributes['sku'])
+                        ->whereStatusIn(config('shop.order_status_purchase'))
+                        ->count() > 0;
     }
-
 }
