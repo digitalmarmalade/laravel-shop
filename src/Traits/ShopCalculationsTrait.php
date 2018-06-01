@@ -104,7 +104,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalPriceAttribute()
     {
-        return Shop::format(number_format($this->total_price, 2));
+        return Shop::format($this->total_price, 2);
     }
 
     /**
@@ -114,7 +114,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalTaxAttribute()
     {
-        return Shop::format(number_format($this->total_tax, 2));
+        return Shop::format($this->total_tax, 2);
     }
 
     /**
@@ -124,7 +124,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalShippingAttribute()
     {
-        return Shop::format(number_format($this->total_shipping, 2));
+        return Shop::format($this->total_shipping, 2);
     }
 
     /**
@@ -134,7 +134,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalDiscountAttribute()
     {
-        return Shop::format(number_format($this->total_discount, 2));
+        return Shop::format($this->total_discount, 2);
     }
 
     /**
@@ -144,7 +144,7 @@ trait ShopCalculationsTrait
      */
     public function getDisplayTotalAttribute()
     {
-        return Shop::format(number_format($this->total, 2));
+        return Shop::format($this->total, 2);
     }
 
     /**

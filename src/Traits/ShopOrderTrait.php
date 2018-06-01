@@ -57,6 +57,11 @@ trait ShopOrderTrait
         return $this->hasMany(Config::get('shop.item'), 'order_id');
     }
 
+    public function status()
+    {
+        return $this->hasOne(Config::get('shop.order_status'), 'code', 'statusCode');
+    }
+
     /**
      * One-to-Many relations with Item.
      *

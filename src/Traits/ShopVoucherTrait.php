@@ -38,20 +38,24 @@ trait ShopVoucherTrait
 
     public function getPrice($cart)
     {
-        $cartTotalPrice = $cart->total_price + $cart->total_tax;
-        if ($cartTotalPrice >= $this->attributes['minimum_price']) {
+        if ($this->meetsRequirements($cart)) {
 
             if ($this->attributes['percentage_adjustment'] > 0) {
-                return ($cartTotalPrice / 100) * $this->attributes['percentage_adjustment'] * -1;
+                return ($cart->total_price / 100) * $this->attributes['percentage_adjustment'] * -1;
             }
 
             if ($this->fixed_price_adjustment > 0) {
                 //if the fixed price adjustment is more than the total cart price, then return -totalCartPrice, else return -fixedPriceAdjustment
-                return ($cartTotalPrice > $this->attributes['fixed_price_adjustment']) ? $this->attributes['fixed_price_adjustment'] * -1 : $cartTotalPrice * -1;
+                return ($cart->total_price > $this->attributes['fixed_price_adjustment']) ? $this->attributes['fixed_price_adjustment'] * -1 : $cart->total_price * -1;
             }
         }
 
         //if nothing matched above then this does not apply so return 0
         return 0;
+    }
+
+    public function meetsRequirements($cart)
+    {
+        return ($cart->total_price + $cart->total_tax >= $this->attributes['minimum_price']);
     }
 }

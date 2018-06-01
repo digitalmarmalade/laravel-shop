@@ -19,6 +19,33 @@ return [
     'name' => 'Laravel Shop',
     /*
       |--------------------------------------------------------------------------
+      | User Model
+      |--------------------------------------------------------------------------
+      |
+      | This is the User model used by LaravelShop to create correct relations.
+      |
+     */
+    'user' => 'App\User',
+    /*
+      |--------------------------------------------------------------------------
+      | User Database Table
+      |--------------------------------------------------------------------------
+      |
+      | This is the User table used by LaravelShop to create correct relations.
+      |
+     */
+    'user_table' => 'users',
+    /*
+      |--------------------------------------------------------------------------
+      | The Auth provider as defined in config/auth.php guards key
+      |--------------------------------------------------------------------------
+      |
+      | This is the User table used by LaravelShop to create correct relations.
+      |
+     */
+    'user_auth_provider' => 'web',
+    /*
+      |--------------------------------------------------------------------------
       | Cart Model
       |--------------------------------------------------------------------------
       |
@@ -64,6 +91,7 @@ return [
       |
      */
     'order_status_table' => 'order_status',
+    'order_status' => 'App\OrderStatus',
     /*
       |--------------------------------------------------------------------------
       | Item Model
@@ -121,33 +149,6 @@ return [
       |
      */
     'coupon_table' => 'coupons',
-    /*
-      |--------------------------------------------------------------------------
-      | User Model
-      |--------------------------------------------------------------------------
-      |
-      | This is the User model used by LaravelShop to create correct relations.
-      |
-     */
-    'user' => 'App\User',
-    /*
-      |--------------------------------------------------------------------------
-      | User Database Table
-      |--------------------------------------------------------------------------
-      |
-      | This is the User table used by LaravelShop to create correct relations.
-      |
-     */
-    'user_table' => 'users',
-    /*
-      |--------------------------------------------------------------------------
-      | The Auth provider as defined in config/auth.php guards key
-      |--------------------------------------------------------------------------
-      |
-      | This is the User table used by LaravelShop to create correct relations.
-      |
-     */
-    'user_auth_provider' => 'web',
     /*
       |--------------------------------------------------------------------------
       | Shop currency code

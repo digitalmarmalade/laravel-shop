@@ -452,5 +452,6 @@ trait ShopCartTrait
         foreach ($mergeCartItems as $mergeCartItem) {
             $this->add($mergeCartItem->object, $mergeCartItem->quantity);
         }
+        $cart->clear();
     }
 }
