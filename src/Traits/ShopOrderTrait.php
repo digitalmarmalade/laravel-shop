@@ -11,12 +11,12 @@ namespace Amsgames\LaravelShop\Traits;
  * @license MIT
  * @package Amsgames\LaravelShop
  */
-
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 
 trait ShopOrderTrait
 {
+
     /**
      * Boot the user model
      * Attach event listener to remove the relationship records when trying to delete
@@ -29,11 +29,10 @@ trait ShopOrderTrait
         parent::boot();
 
         //static::deleting(function($user) {
-           // if (!method_exists(Config::get('auth.model'), 'bootSoftDeletingTrait')) {
-                //$user->items()->sync([]);
-           // }
-
-           // return true;
+        // if (!method_exists(Config::get('auth.model'), 'bootSoftDeletingTrait')) {
+        //$user->items()->sync([]);
+        // }
+        // return true;
         //});
     }
 
@@ -44,7 +43,7 @@ trait ShopOrderTrait
      */
     public function user()
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
+        return $this->belongsTo(config('shop.user'), 'user_id');
     }
 
     /**
@@ -73,7 +72,8 @@ trait ShopOrderTrait
      *
      * @return bool
      */
-    public function getIsLockedAttribute() {
+    public function getIsLockedAttribute()
+    {
         return in_array($this->attributes['statusCode'], Config::get('shop.order_status_lock'));
     }
 
@@ -86,7 +86,8 @@ trait ShopOrderTrait
      *
      * @return this
      */
-    public function scopeWhereUser($query, $userId) {
+    public function scopeWhereUser($query, $userId)
+    {
         return $query->where('user_id', $userId);
     }
 
@@ -99,14 +100,12 @@ trait ShopOrderTrait
      *
      * @return this
      */
-    public function scopeWhereSKU($query, $sku) {
+    public function scopeWhereSKU($query, $sku)
+    {
         return $query->join(
-                config('shop.item_table'), 
-                config('shop.item_table') . '.order_id', 
-                '=', 
-                $this->table . '.id'
-            )
-            ->where(config('shop.item_table') . '.sku', $sku);
+                                config('shop.item_table'), config('shop.item_table') . '.order_id', '=', $this->table . '.id'
+                        )
+                        ->where(config('shop.item_table') . '.sku', $sku);
     }
 
     /**
@@ -118,7 +117,8 @@ trait ShopOrderTrait
      *
      * @return this
      */
-    public function scopeWhereStatus($query, $statusCode) {
+    public function scopeWhereStatus($query, $statusCode)
+    {
         return $query = $query->where('statusCode', $statusCode);
     }
 
@@ -130,7 +130,8 @@ trait ShopOrderTrait
      *
      * @return this
      */
-    public function scopeWhereStatusIn($query, array $statusCodes) {
+    public function scopeWhereStatusIn($query, array $statusCodes)
+    {
         return $query = $query->whereIn('statusCode', $statusCodes);
     }
 
@@ -144,7 +145,8 @@ trait ShopOrderTrait
      *
      * @return this
      */
-    public function scopeFindByUser($query, $userId, $statusCode = null) {
+    public function scopeFindByUser($query, $userId, $statusCode = null)
+    {
         if (!empty($status)) {
             $query = $query->whereStatus($status);
         }
@@ -235,11 +237,11 @@ trait ShopOrderTrait
     public function placeTransaction($gateway, $transactionId, $detail = null, $token = null)
     {
         return call_user_func(Config::get('shop.transaction') . '::create', [
-            'order_id'          => $this->attributes['id'],
-            'gateway'           => $gateway,
-            'transaction_id'    => $transactionId,
-            'detail'            => $detail,
-            'token'             => $token,
+            'order_id' => $this->attributes['id'],
+            'gateway' => $gateway,
+            'transaction_id' => $transactionId,
+            'detail' => $detail,
+            'token' => $token,
         ]);
     }
 
@@ -252,10 +254,10 @@ trait ShopOrderTrait
      */
     private function getItem($sku)
     {
-        $className  = Config::get('shop.item');
-        $item       = new $className();
+        $className = Config::get('shop.item');
+        $item = new $className();
         return $item->where('sku', $sku)
-            ->where('order_id', $this->attributes['id'])
-            ->first();
+                        ->where('order_id', $this->attributes['id'])
+                        ->first();
     }
 }

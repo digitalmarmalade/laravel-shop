@@ -11,7 +11,6 @@ namespace Amsgames\LaravelShop\Models;
  * @license MIT
  * @package Amsgames\LaravelShop
  */
-
 use Amsgames\LaravelShop\Contracts\ShopItemInterface;
 use Amsgames\LaravelShop\Traits\ShopItemTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +20,6 @@ class ShopItemModel extends Model implements ShopItemInterface
 {
 
     use ShopItemTrait;
-
     /**
      * The database table used by the model.
      *
@@ -68,7 +66,7 @@ class ShopItemModel extends Model implements ShopItemInterface
      */
     public function user()
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
+        return $this->belongsTo(config('shop.user'), 'user_id');
     }
 
     /**
@@ -90,5 +88,4 @@ class ShopItemModel extends Model implements ShopItemInterface
     {
         return $this->belongsTo(Config::get('shop.order'), 'order_id');
     }
-
 }
